@@ -12,6 +12,8 @@ app.get("/", (request, response) => response.send("Home"));
 
 app.post("/api/register", loginController.createUser);
 
+app.post("/api/getToken", loginController.getToken);
+
 app.listen(port, () => {
   console.log(`⚡️ [app]: Server is running at http://localhost:${port}`);
 });
