@@ -1,5 +1,6 @@
 import express from "express";
 require("./dbconnect");
+const cors = require("cors");
 
 const loginController = require("./controllers/loginController");
 const searchController = require("./controllers/searchController");
@@ -10,6 +11,7 @@ const port = 8000;
 
 app.use(express.urlencoded());
 app.use(express.json());
+app.use(cors());
 
 app.get("/", (request, response) => response.send("Home"));
 
@@ -22,6 +24,7 @@ app.get("/api/authenticate", auth, function (request, response) {
   response.sendStatus(200);
 });
 
+// app.post("/api/search", searchController.searchRestaurant);
 app.post("/api/search", searchController.searchRestaurant);
 
 app.listen(port, () => {

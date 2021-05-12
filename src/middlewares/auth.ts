@@ -10,17 +10,10 @@ const auth = function (
   response: express.Response,
   next: NextFunction
 ) {
-  console.log("auth.ts");
-  console.log("request.headers : ", request.headers);
-
-  // let token = "";
-  // if (request.headers.authorization) {
-  //   token = request.headers.authorization.substring(7);
-  // }
-
-  let token;
-  if (request.headers.token) {
-    token = request.headers.token;
+  let token = "";
+  console.log(request.headers.authorization);
+  if (request.headers.authorization) {
+    token = request.headers.authorization.substring(7);
   }
 
   if (!token) {

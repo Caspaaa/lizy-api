@@ -1,29 +1,25 @@
 import express from "express";
-import { REPL_MODE_STRICT } from "repl";
 const fetch = require("node-fetch");
 
 const API_KEY = "AIzaSyCMkBPD84IDhGeDvEyXY4OumcwHROvGJ58";
 
-const searchRestaurant = (
+const searchRestaurant = async (
   request: express.Request,
   response: express.Response
 ) => {
-  const { location, radius, priceRange } = request.body;
+  try {
+    const { location, radius, priceRange } = request.body;
+    const rawList: Request = await fetch(
+      `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location}&radius=${radius}&minprice=${priceRange?.min}&maxprice=${priceRange?.max}&type=restaurant&key=${API_KEY}`
+    );
 
-  const rawList: Request = fetch(
-    `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location}&radius=${radius}&minprice=${priceRange.min}&maxprice=${priceRange.max}&type=restaurant&key=${API_KEY}`
-  )
-    .then((response: Response) => response.json())
-    .then((data: any) => {
-      response.send(data);
+    const responseJSON = await rawList.json();
 
-      return data;
-    })
-    .catch(function (error: Error) {
-      console.log(error);
-    });
-
-  console.log("this is rawList : ", rawList);
+    response.send(responseJSON);
+  } catch (error) {
+    console.error(error);
+    alert("Error occured during search");
+  }
 };
 
 module.exports = { searchRestaurant };
