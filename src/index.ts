@@ -2,6 +2,7 @@ import express from "express";
 require("./dbconnect");
 
 const loginController = require("./controllers/loginController");
+const searchController = require("./controllers/searchController");
 const auth = require("./middlewares/auth");
 
 const app = express();
@@ -20,6 +21,8 @@ app.get("/api/authenticate", auth, function (request, response) {
   console.log("authentication successful");
   response.sendStatus(200);
 });
+
+app.post("/api/search", searchController.searchRestaurant);
 
 app.listen(port, () => {
   console.log(`⚡️ [app]: Server is running at http://localhost:${port}`);
