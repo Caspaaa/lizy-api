@@ -66,7 +66,7 @@ const getToken = (request: express.Request, response: express.Response) => {
       const token = jwt.sign(payload, secret, {
         expiresIn: "1h",
       });
-      console.log("token is set to ", token);
+      console.log("token is set to :", token);
       response.json({ token: token });
     });
   });

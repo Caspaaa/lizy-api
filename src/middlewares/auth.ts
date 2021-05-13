@@ -11,7 +11,7 @@ const auth = function (
   next: NextFunction
 ) {
   let token = "";
-  console.log(request.headers.authorization);
+
   if (request.headers.authorization) {
     token = request.headers.authorization.substring(7);
   }
