@@ -1,9 +1,12 @@
 const mongoose = require("mongoose");
 
-mongoose.connect("mongodb://localhost/lizy", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect(
+  `mongodb://${process.env.DATABASE_HOST}/${process.env.DATABASE_NAME}`,
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+);
 
 const db = mongoose.connection;
 

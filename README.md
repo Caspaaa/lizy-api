@@ -1,4 +1,4 @@
-# Lizy
+# Lizy API
 
 ## Prerequisite
 
@@ -9,6 +9,7 @@ https://www.yelp.com/developers/documentation/v3/authentication
 
 Create `.env` file with:
 
+- The MongoDB database host and name as **DATABASE_HOST** and **DATABASE_NAME**
 - The Yelp Fusion Api key as **YELP_API_KEY**.
 - The authentication token signature key as **AUTH_TOKEN_SECRET_KEY** (must match with the signature used in the front-end).
 
