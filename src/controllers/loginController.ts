@@ -61,9 +61,8 @@ const getToken = (request: express.Request, response: express.Response) => {
       }
 
       const payload = { login };
-      const secret = "supersecretsignature";
 
-      const token = jwt.sign(payload, secret, {
+      const token = jwt.sign(payload, process.env.AUTH_TOKEN_SECRET_KEY, {
         expiresIn: "1h",
       });
       console.log("token is set to :", token);

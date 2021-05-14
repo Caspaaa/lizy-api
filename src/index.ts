@@ -1,3 +1,4 @@
+require("dotenv").config();
 import express from "express";
 require("./dbconnect");
 const cors = require("cors");
@@ -20,11 +21,9 @@ app.post("/api/register", loginController.createUser);
 app.post("/api/getToken", loginController.getToken);
 
 app.get("/api/authenticate", auth, function (request, response) {
-  console.log("authentication successful");
   response.sendStatus(200);
 });
 
-// app.post("/api/search", searchController.searchRestaurant);
 app.post("/api/search", searchController.searchRestaurant);
 
 app.listen(port, () => {

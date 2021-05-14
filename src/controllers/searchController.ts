@@ -1,5 +1,6 @@
 import express from "express";
 const fetch = require("node-fetch");
+
 interface YelpItemCategory {
   alias: string;
   title: string;
@@ -41,20 +42,28 @@ interface YelpItem {
 interface Restaurant {
   id: string;
   name: string;
-  address: string;
-  cuisine: string;
+  address: string[];
+  cuisine: string[] | void;
   price: 1 | 2 | 3 | 4;
   rating: number;
 }
 
-const API_KEY =
-  "97b5akL3lvThOYmARof1rgblT34LgYN0rrVe3Gea-MOWieZCzHmR8xfQ33-Jk4-usDC1LshPiiGCckpOrOXc2Urdd2stOxDXRzKqxuaNyZ1CBkn4o9H6nYyU6gWdYHYx";
+interface CuisineCategory {
+  alias: string;
+  title: string;
+}
 
 const formatPriceRange = (priceRange: number[]) => {
   if (priceRange.length === 0) {
     return "1,2,3,4";
   }
   return priceRange.sort().toString();
+};
+
+const getCuisineTypes = (types: CuisineCategory[]) => {
+  types.map((type: CuisineCategory) => {
+    return type.title;
+  });
 };
 
 const searchRestaurant = async (
@@ -70,7 +79,7 @@ const searchRestaurant = async (
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${API_KEY}`,
+          Authorization: `Bearer ${process.env.YELP_API_KEY}`,
         },
       }
     );
@@ -83,9 +92,14 @@ const searchRestaurant = async (
     const restaurants: Restaurant[] = YelpResults.map((place: YelpItem) => {
       return {
         id: place.id,
+        image: place.image_url,
         name: place.name,
-        address: place.location.display_address[0],
-        cuisine: place.categories[0].alias,
+        address: [
+          place.location.address1,
+          place.location.zip_code,
+          place.location.city,
+        ],
+        cuisine: getCuisineTypes(place.categories),
         price: place.price,
         rating: place.rating,
       };

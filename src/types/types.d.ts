@@ -39,8 +39,13 @@ interface YelpItem {
 interface Restaurant {
   id: string;
   name: string;
-  address: string;
-  cuisine: string;
+  address: string[];
+  cuisine: string[] | void;
   price: 1 | 2 | 3 | 4;
   rating: number;
+}
+
+interface CuisineCategory {
+  alias: string;
+  title: string;
 }
