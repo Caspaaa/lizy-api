@@ -8,7 +8,7 @@ const searchController = require("./controllers/searchController");
 const auth = require("./middlewares/auth");
 
 const app = express();
-const port = 8000;
+const port = process.env.PORT || 8000;
 
 app.use(express.urlencoded());
 app.use(express.json());
