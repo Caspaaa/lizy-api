@@ -9,6 +9,9 @@
     "start:prod": "ts-node ./src/index.ts",
     "build": "tsc --project ./src"
   },
+  "engines": {
+    "node": "12.x"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
