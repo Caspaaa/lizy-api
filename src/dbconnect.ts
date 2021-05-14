@@ -1,12 +1,14 @@
 const mongoose = require("mongoose");
 
-mongoose.connect(
-  `mongodb://${process.env.DATABASE_HOST}/${process.env.DATABASE_NAME}`,
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
-);
+const mongodbURI =
+  process.env.DATABASE_HOST === "localhost"
+    ? `mongodb://localhost/${process.env.DATABASE_NAME}`
+    : `mongodb+srv://${process.env.DATABASE_USER}:${process.env.DATABASE_PASSWORD}@${process.env.DATABASE_HOST}/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`;
+
+mongoose.connect(mongodbURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 const db = mongoose.connection;
 

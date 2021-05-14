@@ -57,6 +57,7 @@ const formatPriceRange = (priceRange: number[]) => {
   if (priceRange.length === 0) {
     return "1,2,3,4";
   }
+
   return priceRange.sort().toString();
 };
 
