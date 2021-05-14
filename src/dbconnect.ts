@@ -17,7 +17,7 @@ db.on("error", console.error.bind(console, "connection error:"));
 db.once("open", function () {
   console.log(
     mongoose.connection.readyState === 1
-      ? "✔️  connected to lizy db"
-      : "❌  failed to connect to lizy db"
+      ? `✔️  connected to ${process.env.DATABASE_HOST}`
+      : `❌  failed to connect to ${process.env.DATABASE_HOST}`
   );
 });
