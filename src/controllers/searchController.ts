@@ -43,9 +43,11 @@ interface Restaurant {
   id: string;
   name: string;
   address: string[];
-  cuisine: string[] | void;
+  distance: number;
+  cuisine: string;
   price: 1 | 2 | 3 | 4;
   rating: number;
+  rating_count: number;
 }
 
 interface CuisineCategory {
@@ -62,9 +64,11 @@ const formatPriceRange = (priceRange: number[]) => {
 };
 
 const getCuisineTypes = (types: CuisineCategory[]) => {
-  types.map((type: CuisineCategory) => {
+  const cuisines = types.map((type: CuisineCategory) => {
     return type.title;
   });
+
+  return cuisines.join(" - ");
 };
 
 const searchRestaurant = async (
@@ -86,9 +90,9 @@ const searchRestaurant = async (
     );
 
     const responseJSON = await rawList.json();
-    console.log("responseJSON", responseJSON);
+    // console.log("responseJSON", responseJSON);
     const YelpResults: YelpItem[] = responseJSON.businesses;
-    console.log("YelpResults", YelpResults);
+    // console.log("YelpResults", YelpResults);
 
     const restaurants: Restaurant[] = YelpResults.map((place: YelpItem) => {
       return {
@@ -97,15 +101,16 @@ const searchRestaurant = async (
         name: place.name,
         address: [
           place.location.address1,
-          place.location.zip_code,
-          place.location.city,
+          `${place.location.zip_code} - ${place.location.city}`,
         ],
+        distance: place.distance,
         cuisine: getCuisineTypes(place.categories),
         price: place.price,
         rating: place.rating,
+        rating_count: place.review_count,
       };
     });
-
+    console.log("restaurants", restaurants);
     response.send(restaurants);
   } catch (error) {
     console.error(error);
