@@ -56,12 +56,9 @@ interface CuisineCategory {
   title: string;
 }
 
-const formatPriceRange = (priceRange: number[]) => {
-  if (priceRange.length === 0) {
-    return "1,2,3,4";
-  }
-
-  return priceRange.sort().toString();
+const formatPriceRange = (priceRange: number) => {
+  const newPriceRange = [...Array(priceRange + 1).keys()].slice(1);
+  return newPriceRange.join();
 };
 
 const getCuisineTypes = (types: CuisineCategory[]) => {
@@ -78,11 +75,9 @@ const searchRestaurant = async (
 ) => {
   try {
     const { location, radius, priceRange } = request.body;
-    // console.log("priceRange", priceRange);
-
-    const priceRangeString = formatPriceRange(priceRange);
-    // console.log("priceRangeString", priceRangeString);
-
+    const priceRangeString = formatPriceRange(parseInt(priceRange));
+    console.log("priceRange", priceRange);
+    console.log("priceRangeString", priceRangeString);
     const rawList: Response = await fetch(
       `https://api.yelp.com/v3/businesses/search?location=${location}&radius=${radius}&price=${priceRangeString}&categories=restaurants`,
       {
