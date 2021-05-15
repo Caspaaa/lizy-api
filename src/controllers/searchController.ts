@@ -76,8 +76,8 @@ const searchRestaurant = async (
   try {
     const { location, radius, priceRange } = request.body;
     const priceRangeString = formatPriceRange(parseInt(priceRange));
-    console.log("priceRange", priceRange);
-    console.log("priceRangeString", priceRangeString);
+    // console.log("priceRange", priceRange);
+    // console.log("priceRangeString", priceRangeString);
     const rawList: Response = await fetch(
       `https://api.yelp.com/v3/businesses/search?location=${location}&radius=${radius}&price=${priceRangeString}&categories=restaurants`,
       {
