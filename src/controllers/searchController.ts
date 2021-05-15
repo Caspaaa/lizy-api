@@ -45,6 +45,7 @@ interface Restaurant {
   address: string[];
   distance: number;
   cuisine: string;
+  phone: string;
   price: 1 | 2 | 3 | 4;
   rating: number;
   rating_count: number;
@@ -77,7 +78,10 @@ const searchRestaurant = async (
 ) => {
   try {
     const { location, radius, priceRange } = request.body;
+    // console.log("priceRange", priceRange);
+
     const priceRangeString = formatPriceRange(priceRange);
+    // console.log("priceRangeString", priceRangeString);
 
     const rawList: Response = await fetch(
       `https://api.yelp.com/v3/businesses/search?location=${location}&radius=${radius}&price=${priceRangeString}&categories=restaurants`,
@@ -105,12 +109,12 @@ const searchRestaurant = async (
         ],
         distance: place.distance,
         cuisine: getCuisineTypes(place.categories),
+        phone: place.display_phone,
         price: place.price,
         rating: place.rating,
         rating_count: place.review_count,
       };
     });
-    console.log("restaurants", restaurants);
     response.send(restaurants);
   } catch (error) {
     console.error(error);
