@@ -1,5 +1,6 @@
 import express from "express";
 import fetch from "node-fetch";
+import { totalmem } from "os";
 
 interface YelpItemCategory {
   alias: string;
@@ -44,11 +45,12 @@ interface Restaurant {
   name: string;
   address: string[];
   distance: number;
-  cuisine: string;
+  cuisine: string[];
   phone: string;
   price: 1 | 2 | 3 | 4;
   rating: number;
   rating_count: number;
+  score: number;
 }
 
 interface CuisineCategory {
@@ -67,15 +69,11 @@ const formatPriceRange = (priceRange: number) => {
 };
 
 const getCuisineTypes = (types: CuisineCategory[]) => {
-  const cuisines = types.map((type: CuisineCategory) => {
-    return type.title;
-  });
-
-  return cuisines.join(" - ");
+  return types.map((type: CuisineCategory) => type.title);
 };
 
 interface Preference {
-  [key: string]: string[];
+  [name: string]: string[];
 }
 
 const preferences: Preference = {
@@ -86,16 +84,54 @@ const preferences: Preference = {
   Gaelle: ["Japanese", "Lebanese"],
 };
 
-const getCurrentPreferences = (participants: Participant[]) => {
-  participants.map((user) => {
-    if (user.isChecked) {
-      console.log("Current preferences : ", preferences[user.name]);
+export const currentPreferences = (participants: Participant[]): string[][] => {
+  return participants
+    .filter((item) => item.isChecked)
+    .map((user) => {
       return preferences[user.name];
-    }
+    });
+};
+
+interface PreferenceRatio {
+  [cuisine: string]: number;
+}
+
+export const currentPreferencesWithRatio = (
+  currentPreferences: string[][]
+): PreferenceRatio[] => {
+  return currentPreferences.map((arrayOfPreferences) => {
+    return arrayOfPreferences
+      .reverse()
+      .reduce((languageSet: PreferenceRatio, language: string) => {
+        languageSet[language] =
+          (arrayOfPreferences.indexOf(language) + 1) /
+          arrayOfPreferences.length;
+        return languageSet;
+      }, {});
   });
 };
 
-const searchRestaurant = async (
+export const currentPreferencesWithRatioTotal = (
+  currentPreferencesWithRatio: PreferenceRatio[]
+): PreferenceRatio => {
+  const preferencesWithRatioTotal: PreferenceRatio = {};
+  currentPreferencesWithRatio.forEach((arrayOfPrefs) => {
+    Object.keys(arrayOfPrefs).forEach((language) => {
+      preferencesWithRatioTotal[language] =
+        (preferencesWithRatioTotal[language] || 0) + arrayOfPrefs[language];
+    });
+  });
+  return preferencesWithRatioTotal;
+};
+
+const getCurrentPreferences = (participants: Participant[]) => {
+  const preferences = currentPreferences(participants);
+  const preferencesWithRatio = currentPreferencesWithRatio(preferences);
+
+  return currentPreferencesWithRatioTotal(preferencesWithRatio);
+};
+
+export const searchRestaurant = async (
   request: express.Request,
   response: express.Response
 ) => {
@@ -103,10 +139,23 @@ const searchRestaurant = async (
     const { location, radius, priceRange, participants } = request.body;
     const priceRangeString = formatPriceRange(parseInt(priceRange));
 
-    console.log(participants);
-
     const orderByParticipantsPreferences = (restaurants: Restaurant[]) => {
-      getCurrentPreferences(participants);
+      const prefsTotal = getCurrentPreferences(participants);
+
+      restaurants.map((restaurant) => {
+        Object.keys(prefsTotal).forEach((cuisine) => {
+          if (restaurant.cuisine.includes(cuisine)) {
+            restaurant.score = prefsTotal[cuisine];
+          }
+        });
+      });
+
+      return restaurants.sort((a, b) => {
+        if (a.score === b.score) {
+          return a.distance - b.distance;
+        }
+        return b.score - a.score;
+      });
     };
 
     const rawList = await fetch(
@@ -120,9 +169,7 @@ const searchRestaurant = async (
     );
 
     const responseJSON = await rawList.json();
-    // console.log("responseJSON", responseJSON);
     const YelpResults: YelpItem[] = responseJSON.businesses;
-    // console.log("YelpResults", YelpResults);
 
     const restaurants: Restaurant[] = YelpResults.map((place: YelpItem) => {
       return {
@@ -139,6 +186,7 @@ const searchRestaurant = async (
         price: place.price,
         rating: place.rating,
         rating_count: place.review_count,
+        score: 0,
       };
     });
     orderByParticipantsPreferences(restaurants);
@@ -148,5 +196,3 @@ const searchRestaurant = async (
     alert("Error occured during search");
   }
 };
-
-module.exports = { searchRestaurant };
