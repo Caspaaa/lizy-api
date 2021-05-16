@@ -1,5 +1,5 @@
 import express from "express";
-const fetch = require("node-fetch");
+import fetch from "node-fetch";
 
 interface YelpItemCategory {
   alias: string;
@@ -56,6 +56,11 @@ interface CuisineCategory {
   title: string;
 }
 
+interface Participant {
+  name: string;
+  isChecked: boolean;
+}
+
 const formatPriceRange = (priceRange: number) => {
   const newPriceRange = [...Array(priceRange + 1).keys()].slice(1);
   return newPriceRange.join();
@@ -69,16 +74,42 @@ const getCuisineTypes = (types: CuisineCategory[]) => {
   return cuisines.join(" - ");
 };
 
+interface Preference {
+  [key: string]: string[];
+}
+
+const preferences: Preference = {
+  Gilles: ["Italian", "Lebanese", "Japanese", "Belgian"],
+  Vince: ["Italian", "Japanese", "Lebanese"],
+  Sam: ["Belgian"],
+  Klaas: ["Japanese", "Belgian"],
+  Gaelle: ["Japanese", "Lebanese"],
+};
+
+const getCurrentPreferences = (participants: Participant[]) => {
+  participants.map((user) => {
+    if (user.isChecked) {
+      console.log("Current preferences : ", preferences[user.name]);
+      return preferences[user.name];
+    }
+  });
+};
+
 const searchRestaurant = async (
   request: express.Request,
   response: express.Response
 ) => {
   try {
-    const { location, radius, priceRange } = request.body;
+    const { location, radius, priceRange, participants } = request.body;
     const priceRangeString = formatPriceRange(parseInt(priceRange));
-    // console.log("priceRange", priceRange);
-    // console.log("priceRangeString", priceRangeString);
-    const rawList: Response = await fetch(
+
+    console.log(participants);
+
+    const orderByParticipantsPreferences = (restaurants: Restaurant[]) => {
+      getCurrentPreferences(participants);
+    };
+
+    const rawList = await fetch(
       `https://api.yelp.com/v3/businesses/search?location=${location}&radius=${radius}&price=${priceRangeString}&categories=restaurants`,
       {
         headers: {
@@ -110,6 +141,7 @@ const searchRestaurant = async (
         rating_count: place.review_count,
       };
     });
+    orderByParticipantsPreferences(restaurants);
     response.send(restaurants);
   } catch (error) {
     console.error(error);
