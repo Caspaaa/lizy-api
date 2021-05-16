@@ -129,17 +129,6 @@ describe("currentPreferencesWithRatioTotal()", () => {
       Belgian: 1 + 1 / 4,
     };
 
-    // const preferencesWithRatio = [
-    //   {
-    //     Belgian: 1,
-    //   },
-    //   { Belgian: 2 },
-    // ];
-
-    // const preferencesWithRatioTotal = {
-    //   Belgian: 3,
-    // };
-
     expect(currentPreferencesWithRatioTotal(preferencesWithRatio)).toEqual(
       preferencesWithRatioTotal
     );
