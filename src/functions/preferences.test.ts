@@ -2,7 +2,7 @@ import {
   currentPreferences,
   currentPreferencesWithRatio,
   currentPreferencesWithRatioTotal,
-} from "./searchController";
+} from "./preferences";
 
 describe("currentPreferences()", () => {
   test("when empty participants array returns empty preferences array", () => {
